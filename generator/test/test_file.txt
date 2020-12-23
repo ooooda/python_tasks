@@ -1,0 +1,4 @@
+Name of a task
+https://leetcode.com/problems/
+class Solution:
+    solution
