@@ -2,7 +2,7 @@ import requests
 import re
 import json
 
-TOKEN = 'token has been hidden'
+TOKEN = 'token is hidden'
 USER = 'ooooda'
 REPOSITORY = 'python_au'
 
@@ -37,17 +37,31 @@ def check_all_commits(response, pull):
 
 
 def commit_checker(commit, pull):
-    if not re.match(r"(Added|Deleted|Fixed)[^A-Z]*", commit):
+    part1 = commit.split(" ")[0]
+    print(part1)
+    part2 = "".join(commit.split(" ")[1:])
+    if not re.match(r"(Added |Deleted |Fixed )[^A-Z]*", commit):
         message = "wrong commit format"
+        if not re.match(r"(Added|Deleted|Fixed)", part1):
+            print('!!!' + part1)
+            message += ', wrong action name'
+        if not re.match(r"([^A-Z]*)", part2):
+            message += ', wrong letters format'
         send_message(pull, message)
-        print(commit + ' - wrong format')
+        print(commit + '- ' + message)
 
 
 def pull_checker(pull):
-    if not re.match(r"(HW[0-9]|LEETCODE)-1021", pull['title']):
+    part1 = pull['title'].split('-')[0]
+    part2 = "".join(pull['title'].split('-')[1:])
+    if not re.match(r"(HW[0-4]|LEETCODE)-1021", pull['title']):
         message = "wrong pull request format"
+        if not re.match(r"(HW[0-4]|LEETCODE)", part1):
+            message += ', wrong title name'
+        if not re.match(r"1021", part2):
+            message += ', wrong group number format'
         send_message(pull, message)
-        print(pull['title'] + ' - wrong format')
+        print(pull['title'] + '- ' + message)
 
 
 def send_message(pull, message):
@@ -58,6 +72,4 @@ def send_message(pull, message):
         print(response)
 
 
-if __name__ == '__main__':
-    check_all_pulls(state='all')
-
+check_all_pulls(state='all')
